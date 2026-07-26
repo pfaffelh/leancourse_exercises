@@ -1,0 +1,3 @@
+-- The exercises live under `Exercises/`; open them directly in
+-- VS Code.  This root module only exists so that `lake build`
+-- has a (trivial) target.
