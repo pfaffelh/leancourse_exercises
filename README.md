@@ -4,6 +4,9 @@ Exercise sheets for the course *Interactive Theorem Proving using
 Lean* (University of Freiburg, winter semester 2026/27).  The course
 notes are at <https://pfaffelh.github.io/leancourse/>.
 
+Sheets appear here as the course reaches them, so `git pull` from
+time to time.
+
 ## Setup (local machine)
 
 1. Install [VS Code](https://code.visualstudio.com/) and, inside VS
