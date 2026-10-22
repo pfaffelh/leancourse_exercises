@@ -1,11 +1,12 @@
 import Mathlib
 
 /-!
-# 02-00 -- `Bool`
+# 02-b -- `Bool`
 
 `Bool` is the smallest interesting inductive type: two constructors,
-no arguments. Everything that `Nat` does with reduction, `rfl` and
-case analysis already happens here, without the induction.
+no arguments. Reduction, `rfl` and stuck terms work as for `Nat` on
+the previous sheet, but without induction. New is case analysis
+with `cases`.
 
 Read the section *Bool* in the chapter on the natural numbers first.
 
@@ -18,6 +19,7 @@ Read the section *Bool* in the chapter on the natural numbers first.
 | `cases b`    | `b : Bool` is a variable that blocks reduction     |
 | `t <;> s`    | run `s` on every goal that `t` produces            |
 | `cases h : e`| split on the value of an expression `e`            |
+| `exfalso`    | prove `False` instead of the goal                  |
 -/
 
 /-! ## Constructors and the recursor -/
@@ -191,3 +193,53 @@ example (f : Bool → Bool) : f true = true ∨ f true = false := by
 -- eight goals.
 example (f : Bool → Bool) (b : Bool) : f (f (f b)) = f b := by
   sorry
+
+/-! ## `True` and `False` as types
+
+Read the section *The propositions `True` and `False`* in the chapter
+on the natural numbers. `True` has one constructor, `True.intro`.
+`False` has none. `cases h` makes one goal per constructor of the
+type of `h`: two for `h : Bool`, one for `h : True`, and none for
+`h : False`. -/
+
+#print True
+#print False
+#check @False.rec
+
+-- Exercise 17) `False.elim` is built from the recursor. Prove the
+-- goal with `False.rec`; the motive is the constant `fun _ => 0 = 1`.
+example (h : False) : 0 = 1 :=
+  sorry
+
+-- Exercise 18) The same statement three times: with `exfalso`, with
+-- `False.elim`, and with `cases h`. How many goals does `cases h`
+-- leave, and why?
+example (P : Prop) (h : False) : P := by
+  sorry
+
+example (P : Prop) (h : False) : P := by
+  sorry
+
+example (P : Prop) (h : False) : P := by
+  sorry
+
+-- Exercise 19) `cases h` with `h : True` leaves one goal, and it
+-- teaches you nothing. Check this, then close the goal.
+example (P : Prop) (hP : P) (h : True) : P := by
+  sorry
+
+/-! Two different constructors give different values. If a
+hypothesis claims they are equal, `cases` on it leaves no goal. -/
+
+-- Exercise 20)
+example (h : true = false) : False := by
+  sorry
+
+-- Exercise 21) The same for `Nat`: `0` is `Nat.zero` and `1` is
+-- `Nat.succ 0`.
+example (P : Prop) (h : 0 = 1) : P := by
+  sorry
+
+-- Exercise 22) `Empty` is the `Type` version of `False`: no
+-- constructor. Define a function out of it with `Empty.elim`.
+def fromEmpty : Empty → ℕ := sorry
