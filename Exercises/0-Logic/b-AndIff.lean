@@ -1,19 +1,21 @@
 import Mathlib
 
 /-!
-# 01-b -- Conjunction and biconditional
+# L-b -- Conjunction and biconditional
+
+*Logic block, week 2. No chapter of its own: the theory is Curry-Howard (1.5) and the axioms (2.2), both later.*
 
 Two connectives: `∧` and `↔`. Still only propositions.
 
 ## Tactics introduced here
 
-| tactic            | use it when                                  |
-|-------------------|----------------------------------------------|
-| `constructor`     | goal `P ∧ Q` or `P ↔ Q`: split into two     |
-| `⟨hP, hQ⟩`        | the same, as a term                          |
-| `h.1`, `h.2`      | `h : P ∧ Q`: take the parts                  |
-| `h.mp`, `h.mpr`   | `h : P ↔ Q`: take one direction              |
-| `obtain ⟨hP, hQ⟩` | `h : P ∧ Q`: split it into two hypotheses    |
+| tactic            | use it when                               |
+|-------------------|-------------------------------------------|
+| `constructor`     | goal `P ∧ Q` or `P ↔ Q`: split into two   |
+| `⟨hP, hQ⟩`        | the same, as a term                       |
+| `h.1`, `h.2`      | `h : P ∧ Q`: take the parts               |
+| `h.mp`, `h.mpr`   | `h : P ↔ Q`: take one direction           |
+| `obtain ⟨hP, hQ⟩` | `h : P ∧ Q`: split it into two hypotheses |
 -/
 
 variable (P Q R S T : Prop)
@@ -103,7 +105,7 @@ example (h1 : P ↔ Q) (h2 : Q ↔ R) : P ↔ R := by
 example : (P ↔ Q) ↔ ((P → Q) ∧ (Q → P)) := by
   sorry
 
--- Exercise 10) The puzzle from 01-a, with a new goal.
+-- Exercise 10) The puzzle from L-a, with a new goal.
 example (hPQ : P → Q) (hQT : Q → T) (hQR : Q → R) (hRS : R → S)
     (hTP : T → P) (hRT : R → T) : Q ↔ R := by
   sorry

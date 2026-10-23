@@ -1,21 +1,23 @@
 import Mathlib -- load everything, in particular tactics
 
 /-!
-# 01-a -- Propositions and implication
+# L-a -- Propositions and implication
+
+*Logic block, week 1. No chapter of its own: the theory is Curry-Howard (1.5) and the axioms (2.2), both later.*
 
 Only propositions here: `P`, `Q`, `R`, ... No numbers, no sets, no
 functions. The only connective is `→`.
 
 ## Tactics introduced here
 
-| tactic       | use it when                                  |
-|--------------|----------------------------------------------|
-| `trivial`    | the goal is `True`                           |
-| `intro hP`   | goal `P → Q`: assume `P`, prove `Q`         |
-| `exact hP`   | `hP` proves the goal                         |
-| `assumption` | some hypothesis proves the goal              |
-| `apply hPQ`  | `hPQ : P → Q`, goal `Q`: now prove `P`      |
-| `revert hP`  | the opposite of `intro`                      |
+| tactic       | use it when                            |
+|--------------|----------------------------------------|
+| `trivial`    | the goal is `True`                     |
+| `intro hP`   | goal `P → Q`: assume `P`, prove `Q`    |
+| `exact hP`   | `hP` proves the goal                   |
+| `assumption` | some hypothesis proves the goal        |
+| `apply hPQ`  | `hPQ : P → Q`, goal `Q`: now prove `P` |
+| `revert hP`  | the opposite of `intro`                |
 -/
 
 variable (P Q R S T : Prop)

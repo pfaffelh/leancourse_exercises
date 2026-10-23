@@ -1,20 +1,22 @@
 import Mathlib
 
 /-!
-# 01-c -- Disjunction
+# L-c -- Disjunction
+
+*Logic block, week 2. No chapter of its own: the theory is Curry-Howard (1.5) and the axioms (2.2), both later.*
 
 One connective: `∨`. Still only propositions.
 
 Everything on this sheet is provable *constructively*: no case split
-on "`P` or not `P`" is needed anywhere. That changes in 01-e.
+on "`P` or not `P`" is needed anywhere. That changes in L-e.
 
 ## Tactics introduced here
 
-| tactic              | use it when                               |
-|---------------------|-------------------------------------------|
+| tactic              | use it when                              |
+|---------------------|------------------------------------------|
 | `left`, `right`     | goal `P ∨ Q`: choose which side to prove |
-| `Or.inl`, `Or.inr`  | the same, as terms                        |
-| `obtain (h1 \| h2)` | `h : P ∨ Q`: split into two cases         |
+| `Or.inl`, `Or.inr`  | the same, as terms                       |
+| `obtain (h1 \| h2)` | `h : P ∨ Q`: split into two cases        |
 -/
 
 variable (P Q R S T : Prop)
