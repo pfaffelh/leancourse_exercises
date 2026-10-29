@@ -1,9 +1,9 @@
 import Mathlib
 
 /-!
-# 1.5-a -- Typeclasses
+# 1.6-a -- Typeclasses
 
-*Notes chapter 1.5, week 6.*
+*Notes chapter 1.6, week 7.*
 
 A `class` is a `structure` that Lean finds for you. You never pass an
 instance by hand: you write `[Add α]` in the signature, and *instance
