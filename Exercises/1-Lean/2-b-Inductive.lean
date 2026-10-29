@@ -8,9 +8,9 @@ import Mathlib
 Sheet `1.1-a` defined functions on `ℕ` through the recursor. Here
 you declare types of your own and define functions on them by
 pattern matching: one branch for each constructor. Read the sections
-*Inductive types*, *Pattern matching*, *Recursion and termination*
-and *Proving things about recursive definitions* of chapter 1.2
-first.
+*Inductive types*, *Pattern matching*, *Recursion and termination*,
+*Proving things about recursive definitions* and *The recursor* of
+chapter 1.2 first.
 
 ## Introduced here
 
@@ -24,6 +24,7 @@ first.
 | `decreasing_by omega`      | prove that it decreases                      |
 | `rw [f]`                   | unfold `f` once, by its defining equation    |
 | `simp [f]`                 | unfold `f` as often as needed and simplify   |
+| `T.rec`                    | the recursor of an inductive type `T`        |
 
 `cases`, `<;>` and `rfl` are known from `1.1-b`, `omega` and `simp`
 from `1.1-c`.
@@ -131,6 +132,24 @@ example (t : MyTree) : t.mirror.size = t.size := by
 example (t : MyTree) : t.mirror.mirror = t := by
   sorry
 
+/-! Every inductive type comes with a recursor, here `MyTree.rec`. It
+takes a value for `leaf` and, for `node l a r`, a function of `l`,
+`a`, `r` and of the two values already computed for `l` and `r`.
+`#eval` cannot run a function defined with the recursor of your own
+type, so it is marked `noncomputable`; `rfl` and `induction` work. -/
+
+#check @MyTree.rec
+
+-- Exercise 8) The size once more, now with the recursor. `sl` and
+-- `sr` are the sizes of the two subtrees.
+noncomputable def MyTree.size' (t : MyTree) : ℕ :=
+  MyTree.rec sorry (fun _ _ _ sl sr => sorry) t
+
+-- Exercise 9) By induction. In the `node` case, `simp only
+-- [MyTree.size]`, then `rw [← ihl, ← ihr]`; what is left is `rfl`.
+example (t : MyTree) : t.size' = t.size := by
+  sorry
+
 /-! ## Part 3: Recursion that is not structural
 
 `n / 10` is smaller than `n`, but it is not a part of `n` in the
@@ -146,14 +165,14 @@ def digits (n : ℕ) : ℕ :=
 termination_by n
 decreasing_by omega
 
--- Exercise 8) The sum of the decimal digits. Replace the `sorry`
+-- Exercise 10) The sum of the decimal digits. Replace the `sorry`
 -- after `decreasing_by`. What is the goal there?
 def digitSum (n : ℕ) : ℕ :=
   if _h : n = 0 then 0 else n % 10 + digitSum (n / 10)
 termination_by n
 decreasing_by sorry
 
--- Exercise 9) The number of binary digits: `0` for `n = 0`,
+-- Exercise 11) The number of binary digits: `0` for `n = 0`,
 -- otherwise one more than for `n / 2`. Write the whole definition,
 -- with `termination_by` and `decreasing_by`.
 def binLength (n : ℕ) : ℕ :=
@@ -165,7 +184,7 @@ arithmetic in `m`, so `omega` cannot prove it, and without
 help: `Nat.mod_lt (x : ℕ) : y > 0 → x % y < y` and
 `Nat.pos_of_ne_zero : n ≠ 0 → 0 < n`. -/
 
--- Exercise 10) Replace the `sorry` after `decreasing_by`. Why does
+-- Exercise 12) Replace the `sorry` after `decreasing_by`. Why does
 -- the recursion stop?
 def myGcd (m n : ℕ) : ℕ :=
   if _h : m = 0 then n else myGcd (n % m) m
@@ -186,23 +205,23 @@ example (n : ℕ) (h : n < 10) : digits n = 1 := by
   rw [digits]
   simp [h]
 
--- Exercise 11)
+-- Exercise 13)
 example : digitSum 1234 = 10 := by
   sorry
 
--- Exercise 12)
+-- Exercise 14)
 example : binLength 37 = 6 := by
   sorry
 
--- Exercise 13)
+-- Exercise 15)
 example : myGcd 48 36 = 12 := by
   sorry
 
--- Exercise 14) `rw [myGcd]` unfolds once; then `simp`.
+-- Exercise 16) `rw [myGcd]` unfolds once; then `simp`.
 example (n : ℕ) : myGcd 0 n = n := by
   sorry
 
--- Exercise 15) Start with `rw [binLength]`. Then prove
+-- Exercise 17) Start with `rw [binLength]`. Then prove
 -- `2 * n ≠ 0` and `2 * n / 2 = n` with `have` and `omega`, and give
 -- both to `simp`.
 example (n : ℕ) (h : 0 < n) :
