@@ -1,9 +1,9 @@
 import Mathlib
 
 /-
-# 2.3-a -- Well-foundedness and paradoxes
+# 2.3-b -- Well-foundedness and paradoxes
 
-*Notes chapter 2.3, week 9.*
+*Notes chapter 2.3, week 10.*
 
 Read the chapter *Well-Foundedness and Paradoxes* first. It separates
 two mechanisms: `Acc` and `WellFounded` rule out infinite descent
