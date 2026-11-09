@@ -24,15 +24,18 @@ in chapter 1.2 and chapter 1.3 first.
 | `rw [f]`                   | unfold `f` once, by its defining equation    |
 | `simp [f]`                 | unfold `f` as often as needed and simplify   |
 | `T.rec`                    | the recursor of an inductive type `T`        |
+| `fun_induction f x with`   | induction along the branches of `f`          |
+| `[]`, `a :: l`             | the two patterns for a list                  |
+| `T.casesOn`                | the case split behind every `match`          |
 
 ## Tactics from earlier sheets
 
-| sheet   | tactics        |
-|---------|----------------|
-| `1.1-a` | `rfl`          |
-| `1.1-b` | `cases`, `<;>` |
-| `L-f`   | `have`         |
-| `1.1-c` | `omega`        |
+| sheet   | tactics                 |
+|---------|-------------------------|
+| `1.1-a` | `rfl`                   |
+| `1.1-b` | `cases`, `<;>`          |
+| `L-f`   | `have`                  |
+| `1.1-c` | `simp`, `ring`, `omega` |
 -/
 
 /-! ## Part 1: A type with finitely many elements
@@ -92,49 +95,49 @@ example (f : Bool → Bool) (b : Bool) : f (f (f b)) = f b := by
 
 A tree is a leaf, or a node with a left tree, a label and a right
 tree. The type occurs in the arguments of its own constructor: it is
-recursive, like `ℕ`. (`Tree` is taken in Mathlib, hence `MyTree`.) -/
+recursive, like `ℕ`. This is the type `BinTree` from chapter 1.3. -/
 
-inductive MyTree where
-  | leaf : MyTree
-  | node : MyTree → ℕ → MyTree → MyTree
+inductive BinTree where
+  | leaf : BinTree
+  | node (l : BinTree) (a : ℕ) (r : BinTree) : BinTree
 
-open MyTree
+open BinTree
 
 /-! A recursive function calls itself on the subtrees. That is
 structural recursion, and Lean accepts it without further proof. -/
 
-def MyTree.size : MyTree → ℕ
+def BinTree.size : BinTree → ℕ
   | leaf => 0
   | node l _ r => l.size + 1 + r.size
 
-def MyTree.leaves : MyTree → ℕ
+def BinTree.leaves : BinTree → ℕ
   | leaf => 1
   | node l _ r => l.leaves + r.leaves
 
 /-! `induction t` gives one goal per constructor, and for `node` one
-induction hypothesis per subtree. `simp only [MyTree.leaves, ...]`
+induction hypothesis per subtree. `simp only [BinTree.leaves, ...]`
 rewrites with the defining equations and the hypotheses; what is
 left is arithmetic. -/
 
-example (t : MyTree) : t.leaves = t.size + 1 := by
+example (t : BinTree) : t.leaves = t.size + 1 := by
   induction t with
   | leaf => rfl
   | node l a r ihl ihr =>
-    simp only [MyTree.leaves, MyTree.size, ihl, ihr]
+    simp only [BinTree.leaves, BinTree.size, ihl, ihr]
     omega
 
-/-! `dsimp only [MyTree.size]` unfolds with the same equations, and it
+/-! `dsimp only [BinTree.size]` unfolds with the same equations, and it
 applies a `fun` to its argument. It uses only equations that hold by
 definition, and it leaves the goal for you to look at instead of
 trying to finish it. -/
 
-example (l r : MyTree) (a : ℕ) :
+example (l r : BinTree) (a : ℕ) :
     (node l a r).size = (fun n => n + 1) (l.size + r.size) := by
-  dsimp only [MyTree.size]
+  dsimp only [BinTree.size]
   omega
 
 -- Exercise 5) The sum of all labels.
-def MyTree.sum : MyTree → ℕ
+def BinTree.sum : BinTree → ℕ
   | _ => sorry
 
 -- Once exercise 5 is solved, uncomment:
@@ -143,33 +146,33 @@ def MyTree.sum : MyTree → ℕ
 
 -- Exercise 6) The mirror image: left and right swapped, at every
 -- node.
-def MyTree.mirror : MyTree → MyTree
+def BinTree.mirror : BinTree → BinTree
   | _ => sorry
 
 -- Exercise 7) Like the worked example above.
-example (t : MyTree) : t.mirror.size = t.size := by
+example (t : BinTree) : t.mirror.size = t.size := by
   sorry
 
 -- Exercise 8) Here `simp only` closes the goal by itself.
-example (t : MyTree) : t.mirror.mirror = t := by
+example (t : BinTree) : t.mirror.mirror = t := by
   sorry
 
-/-! Every inductive type comes with a recursor, here `MyTree.rec`. It
+/-! Every inductive type comes with a recursor, here `BinTree.rec`. It
 takes a value for `leaf` and, for `node l a r`, a function of `l`,
 `a`, `r` and of the two values already computed for `l` and `r`.
 `#eval` cannot run a function defined with the recursor of your own
 type, so it is marked `noncomputable`; `rfl` and `induction` work. -/
 
-#check @MyTree.rec
+#check @BinTree.rec
 
 -- Exercise 9) The size once more, now with the recursor. `sl` and
 -- `sr` are the sizes of the two subtrees.
-noncomputable def MyTree.size' (t : MyTree) : ℕ :=
-  MyTree.rec sorry (fun _ _ _ sl sr => sorry) t
+noncomputable def BinTree.size' (t : BinTree) : ℕ :=
+  BinTree.rec sorry (fun _ _ _ sl sr => sorry) t
 
 -- Exercise 10) By induction. In the `node` case, `simp only
--- [MyTree.size]`, then `rw [← ihl, ← ihr]`; what is left is `rfl`.
-example (t : MyTree) : t.size' = t.size := by
+-- [BinTree.size]`, then `rw [← ihl, ← ihr]`; what is left is `rfl`.
+example (t : BinTree) : t.size' = t.size := by
   sorry
 
 /-! ## Part 3: Recursion that is not structural
@@ -248,4 +251,154 @@ example (n : ℕ) : myGcd 0 n = n := by
 -- both to `simp`.
 example (n : ℕ) (h : 0 < n) :
     binLength (2 * n) = binLength n + 1 := by
+  sorry
+
+/-! ## Part 5: Induction along the definition
+
+`induction n` gives a hypothesis for `n` when the goal is about
+`n + 1`. A function such as `digits` calls itself on `n / 10`, so that
+hypothesis is the wrong one. `fun_induction digits n` follows the
+definition instead: one goal per branch, with `digits n` already
+replaced by that branch, and one induction hypothesis per recursive
+call. The cases are named `case1`, `case2`, … in the order of the
+branches; each takes the variables and conditions of its branch, and
+then the hypotheses. -/
+
+example (n : ℕ) : digits n ≤ n + 1 := by
+  fun_induction digits n with
+  | case1 n h =>
+    -- h : n < 10
+    -- ⊢ 1 ≤ n + 1
+    omega
+  | case2 n h ih =>
+    -- h : ¬n < 10
+    -- ih : digits (n / 10) ≤ n / 10 + 1
+    -- ⊢ 1 + digits (n / 10) ≤ n + 1
+    omega
+
+-- Exercise 19) In the first branch the condition `n = 0` is used up:
+-- Lean replaces `n` by `0`, and `case1` takes no names.
+example (n : ℕ) : digitSum n ≤ n := by
+  sorry
+
+-- Exercise 20) For your `binLength` from exercise 12.
+example (n : ℕ) : binLength n ≤ n := by
+  sorry
+
+/-! Structural recursion works the same way. `fib` has three
+branches, and the third calls itself twice, so `case3` has two
+induction hypotheses. `induction n` would give only the one for
+`n + 1`. -/
+
+def fib : ℕ → ℕ
+  | 0 => 0
+  | 1 => 1
+  | n + 2 => fib n + fib (n + 1)
+
+-- Exercise 21) In `case3` the goal shows `2 ^ n.succ.succ`, which is
+-- `2 ^ (n + 2)`. `omega` does not know powers: state
+-- `2 ^ (n + 1) = 2 * 2 ^ n` and `2 ^ (n + 2) = 4 * 2 ^ n` with
+-- `have … := by ring`, then `omega`. The first two cases: `simp`.
+example (n : ℕ) : fib n ≤ 2 ^ n := by
+  sorry
+
+/-! ## Part 6: Lists
+
+A list is `[]` or `a :: l` (chapter 1.3). A function on lists has
+one branch for each, as for `BinTree` above. -/
+
+-- Exercise 22) The sum of a list of natural numbers.
+def sumList : List ℕ → ℕ
+  | _ => sorry
+
+-- Once exercise 22 is solved, uncomment:
+-- example : sumList [1, 2, 3] = 6 := rfl
+
+-- Exercise 23) Induction on `l₁`. The simp lemma `List.cons_append`
+-- says `(a :: l₁) ++ l₂ = a :: (l₁ ++ l₂)`.
+example (l₁ l₂ : List ℕ) :
+    sumList (l₁ ++ l₂) = sumList l₁ + sumList l₂ := by
+  sorry
+
+/-! ## Part 7: Case splits
+
+Lean checks that the patterns cover every constructor. -/
+
+-- Exercise 24) Uncomment the definition and read the error. Add
+-- the missing branch so that `pred' 0 = 0`.
+-- def pred' : ℕ → ℕ
+--   | n + 1 => n
+
+/-! Behind every `match` is `T.casesOn`: the recursor without the
+values at the recursive arguments. For `ℕ` it takes the value at
+`0` and a function for `n + 1`. -/
+
+#check @Nat.casesOn
+
+-- Exercise 25) Define `isZero` with `Nat.casesOn`, without pattern
+-- matching.
+def isZero (n : ℕ) : Bool :=
+  Nat.casesOn n sorry (fun _ => sorry)
+
+-- Once exercise 25 is solved, uncomment:
+-- example : isZero 0 = true := rfl
+-- example : isZero 5 = false := rfl
+
+/-! ## Part 8: Two values at once
+
+`fib` from Part 5 calls itself twice in every step. Carrying the
+pair `(fib n, fib (n + 1))` needs one call per step (chapter 1.3,
+*Course-of-values recursion*). -/
+
+-- Exercise 26) From the pair `p` for `n`, build the pair for
+-- `n + 1`.
+def fibPair : ℕ → ℕ × ℕ
+  | 0 => (0, 1)
+  | n + 1 =>
+    let p := fibPair n
+    sorry
+
+-- Once exercise 26 is solved, uncomment:
+-- example : fibPair 10 = (55, 89) := rfl
+
+-- Exercise 27) Induction on `n`. In the `succ` case,
+-- `simp only [fibPair, ih, fib]` is enough.
+example (n : ℕ) : fibPair n = (fib n, fib (n + 1)) := by
+  sorry
+
+/-! Compare the running times: uncomment and look at the line
+`interpretation … took …`.
+
+```
+set_option profiler true in
+#eval fib 30
+set_option profiler true in
+#eval (fibPair 30).1
+```
+-/
+
+/-! ## Part 9: Strict positivity
+
+Lean accepts an inductive type only if the type being declared
+never stands to the left of an arrow in the argument of a
+constructor (chapter 1.3). -/
+
+-- Exercise 28) Which of these does Lean accept? Decide first, then
+-- uncomment them one at a time.
+-- inductive T1 where
+--   | mk : (ℕ → T1) → T1
+-- inductive T2 where
+--   | mk : (T2 → ℕ) → T2
+-- inductive T3 where
+--   | mk : List T3 → T3
+-- inductive T4 where
+--   | mk : ((T4 → ℕ) → ℕ) → T4
+-- inductive T5 where
+--   | mk : (T5 → T5) → T5
+
+-- Exercise 29) Why the rule is there. With `mk` and `unmk` as
+-- hypotheses, `Bad` behaves like `Bad ↔ ¬Bad`. Derive `False`:
+-- first `have neg : Bad → False`, by applying `unmk` to `b` twice.
+example (Bad : Type) (mk : (Bad → False) → Bad)
+    (unmk : Bad → (Bad → False)) : False := by
   sorry
