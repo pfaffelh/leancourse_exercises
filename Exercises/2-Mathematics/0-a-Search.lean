@@ -8,8 +8,8 @@ reference is the appendix* Navigating Mathlib.
 
 Mathlib has about 189 000 theorems. From here on most steps of a
 proof are among them, and the work is to find the right one.
-`exact?`, `apply?`, `#loogle` and `#leansearch` are known from
-`L-g`, where the goals were propositional. Here the goals are
+`#check`, `exact?`, `rw?`, `#loogle` and `#search` are known from
+`1.1-c`, `apply?` from `L-g`. Here the goals are
 mathematics, and most of the sheet is about what to do when the first
 search does not succeed.
 
@@ -17,11 +17,7 @@ search does not succeed.
 
 | tool               | use it when                                         |
 |--------------------|-----------------------------------------------------|
-| `rw?`              | an equation or `↔` in Mathlib rewrites the goal     |
-| `rw? at h`         | the same for the hypothesis `h`                     |
-| `#check name`      | you guessed a name and want to see its statement    |
-| `#loogle ?a + _`   | you know the form of the statement                  |
-| `#loogle A, B`     | you know constants that occur in the statement      |
+| `rw? at h`         | an equation in Mathlib rewrites the hypothesis `h`  |
 
 ## Tactics from earlier sheets
 
@@ -185,7 +181,7 @@ example (x : ℝ) : 0 < Real.exp x * (x ^ 2 + 1) := by
 
 /-! ## Part 6: Searching outside Lean
 
-`#loogle` and `#leansearch` send the query to a server, so they need
+`#loogle` and `#search` send the query to a server, so they need
 an internet connection; both sites can also be used in the browser.
 `#loogle` takes a pattern, with `?a` for a variable that must occur
 the same way each time and `_` for anything:
@@ -193,9 +189,9 @@ the same way each time and `_` for anything:
     #loogle (?a + ?b) ^ 2 = _
     #loogle Real.sqrt, Real.exp
 
-`#leansearch` takes a sentence in English:
+`#search` takes a sentence in English that ends with `.` or `?`:
 
-    #leansearch "a continuous function takes every value in between"
+    #search "A continuous function takes every value in between."
 
 Uncomment the searches below one at a time. -/
 
@@ -210,11 +206,11 @@ example (a b : ℝ) : (a + b) ^ 2 = a ^ 2 + 2 * a * b + b ^ 2 := by
 -- #loogle Real.sqrt ?x ^ 2 = ?x
 
 -- Exercise 20) The intermediate value theorem. `exact?` fails. Find
--- `intermediate_value_Icc` with `#leansearch`, read its statement
+-- `intermediate_value_Icc` with `#search`, read its statement
 -- with `#check`, and use it. It wants `ContinuousOn f (Set.Icc 0 1)`;
 -- `hf.continuousOn` gives that. Its conclusion is about an image
 -- `f '' s`, as in chapter 2.2.
--- #leansearch "a continuous function takes every value in between"
+-- #search "A continuous function takes every value in between."
 example (f : ℝ → ℝ) (hf : Continuous f) (h0 : f 0 < 0) (h1 : 0 < f 1) :
     ∃ x, f x = 0 := by
   sorry
